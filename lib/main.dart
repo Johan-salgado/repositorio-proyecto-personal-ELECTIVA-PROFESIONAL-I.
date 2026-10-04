@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'taller1/home_page.dart';
+import 'taller3/screens/future_page.dart';
+import 'taller3/screens/isolate_page.dart';
+import 'taller3/screens/timer_page.dart';
+
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
@@ -9,128 +14,91 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Taller 1',
+      title: 'Electiva Profesional I',
       theme: ThemeData(colorSchemeSeed: Colors.blue, useMaterial3: true),
-      home: const HomePage(),
+      home: const MenuPage(),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+/// Pantalla de inicio: enlaza el Taller 1 y las 3 pantallas del Taller 3.
+class MenuPage extends StatelessWidget {
+  const MenuPage({super.key});
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  bool _cambiado = false;
-
-  // Variable de estado: controla el título de la AppBar
-  String get _titulo => _cambiado ? '¡Título cambiado!' : 'Hola, Flutter';
-
-  void _cambiarTitulo() {
-    setState(() {
-      _cambiado = !_cambiado;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Título actualizado')),
-    );
+  void _abrir(BuildContext context, Widget pagina) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => pagina));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_titulo)),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Nombre completo del estudiante, centrado
-              const Center(
-                child: Text(
-                  'JOHAN ELIU SALGADO CASTRO',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Row con Image.network() + Image.asset()
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Flexible(
-                    child: Image.network(
-                      'https://picsum.photos/200/150',
-                      height: 90,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Flexible(
-                    child: Image.asset(
-                      'assets/images/logo.jpg',
-                      height: 90,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              // Botón obligatorio: alterna título + SnackBar con setState()
-              ElevatedButton(
-                onPressed: _cambiarTitulo,
-                child: const Text('Cambiar título'),
-              ),
-              const SizedBox(height: 24),
-
-              // Widget adicional 1: Container (bordes/colores/márgenes)
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  border: Border.all(color: Colors.blue, width: 2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Text(
-                  'Este texto está dentro de un Container con borde y color de fondo.',
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Widget adicional 2: ListView (lista simple con icono y texto)
-              SizedBox(
-                height: 200,
-                child: ListView(
-                  children: const [
-                    ListTile(
-                      leading: Icon(Icons.phone_android),
-                      title: Text('Programación Móvil'),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.code),
-                      title: Text('Flutter y Dart'),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.merge_type),
-                      title: Text('Git Flow'),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.school),
-                      title: Text('UCEVA'),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+      appBar: AppBar(title: const Text('Menú principal')),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          const Text(
+            'Taller 3 – Segundo plano y asincronía',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-        ),
+          const SizedBox(height: 8),
+          _Opcion(
+            icono: Icons.cloud_download,
+            titulo: '1. Future / async / await',
+            subtitulo: 'Consulta simulada: Cargando → Éxito / Error',
+            onTap: () => _abrir(context, const FuturePage()),
+          ),
+          _Opcion(
+            icono: Icons.timer,
+            titulo: '2. Cronómetro (Timer)',
+            subtitulo: 'Iniciar / Pausar / Reanudar / Reiniciar',
+            onTap: () => _abrir(context, const TimerPage()),
+          ),
+          _Opcion(
+            icono: Icons.memory,
+            titulo: '3. Tarea pesada (Isolate)',
+            subtitulo: 'Cálculo CPU-bound sin bloquear la UI',
+            onTap: () => _abrir(context, const IsolatePage()),
+          ),
+          const Divider(height: 32),
+          const Text(
+            'Talleres anteriores',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          _Opcion(
+            icono: Icons.widgets,
+            titulo: 'Taller 1 – Widgets y setState',
+            subtitulo: 'StatefulWidget, SnackBar, ListView',
+            onTap: () => _abrir(context, const HomePage()),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Opcion extends StatelessWidget {
+  const _Opcion({
+    required this.icono,
+    required this.titulo,
+    required this.subtitulo,
+    required this.onTap,
+  });
+
+  final IconData icono;
+  final String titulo;
+  final String subtitulo;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        leading: Icon(icono),
+        title: Text(titulo),
+        subtitle: Text(subtitulo),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: onTap,
       ),
     );
   }
